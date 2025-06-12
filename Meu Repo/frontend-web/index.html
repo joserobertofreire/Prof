@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Microservices Frontend</title>
+</head>
+<body>
+  <h1>Cadastro de Usuário e Pedido</h1>
+  <form id="form">
+    <label>Nome: <input type="text" id="name" required></label><br>
+    <label>Email: <input type="email" id="email" required></label><br>
+    <label>Produto: <input type="text" id="product" required></label><br>
+    <button type="submit">Enviar</button>
+  </form>
+  <p id="result"></p>
+  <script>
+    const form = document.getElementById('form');
+    const result = document.getElementById('result');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+      const product = document.getElementById('product').value;
+
+      try {
+        const userResp = await fetch('http://localhost:3001/users', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email })
+        });
+
+        const orderResp = await fetch('http://localhost:3002/orders', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ product, email })
+        });
+
+        result.textContent = "Dados enviados com sucesso!";
+      } catch (err) {
+        result.textContent = "Erro ao enviar dados.";
+        console.error(err);
+      }
+    });
+  </script>
+</body>
+</html>

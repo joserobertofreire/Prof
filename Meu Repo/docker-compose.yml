@@ -1,0 +1,47 @@
+version: '3.8'
+services:
+  frontend-web:
+    image: nginx:alpine
+    volumes:
+      - ./frontend-web:/usr/share/nginx/html
+    ports:
+      - "8080:80"
+    depends_on:
+      - user-service
+      - order-service
+
+  user-service:
+    build: ./user-service
+    ports:
+      - "3001:3000"
+    environment:
+      - DB_HOST=db-user
+      - DB_USER=admin
+      - DB_PASS=admin
+    depends_on:
+      - db-user
+
+  db-user:
+    image: postgres
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: users
+
+  order-service:
+    build: ./order-service
+    ports:
+      - "3002:3000"
+    environment:
+      - DB_HOST=db-order
+      - DB_USER=admin
+      - DB_PASS=admin
+    depends_on:
+      - db-order
+
+  db-order:
+    image: postgres
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: orders
